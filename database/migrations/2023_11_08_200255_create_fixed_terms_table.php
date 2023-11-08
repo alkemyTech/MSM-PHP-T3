@@ -19,7 +19,7 @@ return new class extends Migration
             $table->double('total')->notNull();
             $table->integer('duration')->notNull();
             $table->timestamps();
-            $table->boolean('deleted')->default(false);
+            $table->timestamp('closed_at');
         });
     }
 

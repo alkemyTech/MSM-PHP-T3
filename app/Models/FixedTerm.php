@@ -15,5 +15,6 @@ class FixedTerm extends Model
         'interest',
         'total',
         'duration',
+        'closed_at'
     ];
 }
