@@ -61,8 +61,6 @@ class AuthController extends Controller
             'transaction_limit' => 1000,
         ]);
 
-        $token = $user->createToken('token')->plainTextToken;
-
-        return response()->created(['token' => $token, 'user' => $user]);
+        return response()->created(['user' => $user]);
     }
 }
