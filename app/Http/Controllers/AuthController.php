@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -65,4 +67,24 @@ class AuthController extends Controller
 
         return response()->created(['token' => $token, 'user' => $user]);
     }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (! $token = Auth::attempt($credentials)) {
+            return response()->json(['error' => 'Usuario no autorizado'], 401);
+        }
+
+        $user = Auth::user();
+        
+        $token = JWTAuth::factory()->setTTL(2)->make(compact('user'));
+
+        return response()->json([
+            'token' => $token,
+            'user' => $user,
+            'message' => 'Inicio de sesion exitoso'
+        ]);
+    }
+   
 }
