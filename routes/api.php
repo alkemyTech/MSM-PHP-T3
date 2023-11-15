@@ -22,5 +22,5 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
     });
 
-    Route::apiResource('users', UserController::class);
+    Route::delete('users/{id}', [UserController::class, 'destroy']);
 });
