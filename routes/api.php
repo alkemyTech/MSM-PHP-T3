@@ -21,4 +21,4 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
 });
 
-Route::apiResource('users', UserController::class);
+Route::get('users', [UserController::class,'index']);
