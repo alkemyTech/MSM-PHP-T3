@@ -24,5 +24,6 @@ Route::middleware(['api', 'auth:api'])->group(function () {
     });
 
     Route::apiResource('accounts', AccountController::class);
-    Route::apiResource('users', UserController::class);
+    Route::delete('users/{id}', [UserController::class, 'destroy']);
+
 });
