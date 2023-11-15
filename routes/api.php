@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -22,5 +23,6 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
     });
 
+    Route::apiResource('accounts', AccountController::class);
     Route::apiResource('users', UserController::class);
 });
