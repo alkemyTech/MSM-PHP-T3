@@ -39,12 +39,17 @@ class AuthController extends Controller
             $cbuUsd = Str::random(22);
         }
 
+        $userRole = Role::where('name', 'USER')->first();
+        if (!$userRole) {
+            $userRole = Role::create(['name' => 'USER']);
+        }
+
         $user = User::create([
             'name' => $request->input('name'),
             'last_name' => $request->input('last_name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
-            'role_id' => Role::where('name', 'USER')->first()->id,
+            'role_id' => $userRole->id
         ]);
 
         $pesosAccount = Account::create([
@@ -70,19 +75,18 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        if (! $token = Auth::attempt($credentials)) {
+        if (!$token = Auth::attempt($credentials)) {
             return response()->json(['error' => 'Usuario no autorizado'], 401);
         }
 
         $user = Auth::user();
-        
-        $token = JWTAuth::factory()->setTTL(2)->make(compact('user'));
 
-        return response()->json([
+        $token = JWTAuth::factory()->setTTL(60)->make(compact('user'));
+
+        return response()->ok([
             'token' => $token,
             'user' => $user,
             'message' => 'Inicio de sesion exitoso'
         ]);
     }
-   
 }
