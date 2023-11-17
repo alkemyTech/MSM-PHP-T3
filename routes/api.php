@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -22,7 +23,7 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('register', [AuthController::class, 'register'])->name('auth.registro')->withoutMiddleware(['auth:api']);
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
     });
-  
+
     Route::get('users', [UserController::class,'index']);
     Route::delete('users/{id}', [UserController::class, 'destroy']);
 
@@ -32,5 +33,6 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('payment', [TransactionController::class, 'makePayment']);
     });
 
+    Route::get('accounts/{id}', [AccountController::class, 'show']);
 });
 
