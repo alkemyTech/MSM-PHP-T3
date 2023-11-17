@@ -27,6 +27,6 @@ Route::middleware(['api', 'auth:api'])->group(function () {
     Route::delete('users/{id}', [UserController::class, 'destroy']);
 
     Route::prefix('transactions')->group(function () {
-        Route::post('send', [TransactionController::class, 'sendMoney'])->withoutMiddleware(['auth:api']);
+        Route::post('send', [TransactionController::class, 'sendMoney']);
     });
 });

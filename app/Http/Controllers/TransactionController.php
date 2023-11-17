@@ -26,10 +26,7 @@ class TransactionController extends Controller
         }
 
         // Obtener el usuario emisor del token
-        // $senderUser = Auth::user();
-        $senderUser = User::whereHas('account', function ($query) use ($request) {
-            $query->where('id', $request->input('sender_account_id'));
-        })->first();
+        $senderUser = Auth::user();
 
         // Obtener la cuenta del usuario emisor a través del sender_account_id
         $senderAccount = $senderUser->account
@@ -60,6 +57,11 @@ class TransactionController extends Controller
             return response()->notFound(['message' => 'Usuario receptor no encontrado']);
         }
 
+        // Verificar si las cuentas tienen la misma moneda
+        if ($senderAccount->currency !== $receiverAccount->currency) {
+            return response()->badRequest(['message' => 'No coinciden los tipos de moneda']);
+        }
+
         // Obtener el monto de la transferencia
         $transactionAmount = $request->input('amount');
 
@@ -67,7 +69,7 @@ class TransactionController extends Controller
         if ($senderAccount->balance >= $request->input('amount') && $request->input('amount') <= $senderAccount->transaction_limit) {
 
             // Crear transacción INCOME para el receptor
-            Transaction::create([
+            $incomeTransaction = Transaction::create([
                 'amount' => $transactionAmount,
                 'type' => 'INCOME',
                 'account_id' => $receiverAccount->id,
@@ -75,7 +77,7 @@ class TransactionController extends Controller
             ]);
 
             // Crear transacción PAYMENT para el emisor
-            Transaction::create([
+            $paymentTransaction = Transaction::create([
                 'amount' => $transactionAmount,
                 'type' => 'PAYMENT',
                 'account_id' => $senderAccount->id,
@@ -86,23 +88,9 @@ class TransactionController extends Controller
             $senderAccount->decrement('balance', $transactionAmount);
             $receiverAccount->increment('balance', $transactionAmount);
 
-            // Registrar transaction DEPOSIT en la tabla transactions
-            $depositTransactionSender = Transaction::create([
-                'amount' => $transactionAmount,
-                'type' => 'DEPOSIT',
-                'description' => "Depósito de {$transactionAmount} a {$receiverUser->name} {$receiverUser->last_name} proveniente de {$senderUser->name} {$senderUser->last_name}",
-                'account_id' => $senderAccount->id,
-                'transaction_date' => now(),
-            ]);
-            $depositTransactionReceiver = Transaction::create([
-                'amount' => $transactionAmount,
-                'type' => 'DEPOSIT',
-                'description' => "Depósito de {$transactionAmount} a {$receiverUser->name} {$receiverUser->last_name} proveniente de {$senderUser->name} {$senderUser->last_name}",
-                'account_id' => $receiverAccount->id,
-                'transaction_date' => now(),
-            ]);
 
-            return response()->ok(['message' => 'Transferencia realizada con éxito', $depositTransactionSender, $depositTransactionReceiver]);
+
+            return response()->ok(['message' => 'Transferencia realizada con éxito', $paymentTransaction, $incomeTransaction]);
         } else {
 
             $errorMessage = '';
@@ -110,11 +98,9 @@ class TransactionController extends Controller
             if ($senderAccount->balance < $request->input('amount')) {
 
                 $errorMessage = 'Saldo insuficiente.';
-
             } else {
 
                 $errorMessage = 'Límite de transacción excedido.';
-
             }
 
             return response()->badRequest(['message' => $errorMessage]);
