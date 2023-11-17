@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,8 +22,13 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('register', [AuthController::class, 'register'])->name('auth.registro')->withoutMiddleware(['auth:api']);
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
     });
-
+  
+    Route::get('users', [UserController::class,'index']);
     Route::delete('users/{id}', [UserController::class, 'destroy']);
+
+    Route::prefix('transactions')->group(function () {
+        Route::post('send', [TransactionController::class, 'sendMoney']);
+    });
+
 });
 
-Route::get('users', [UserController::class,'index']);
