@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,15 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
     });
 
-    Route::get('accounts/{id}', [AccountController::class, 'show']);
+    Route::get('users', [UserController::class,'index']);
     Route::delete('users/{id}', [UserController::class, 'destroy']);
+
+    Route::prefix('transactions')->group(function () {
+        Route::post('send', [TransactionController::class, 'sendMoney']);
+        Route::post('deposit', [TransactionController::class, 'depositMoney']);
+        Route::post('payment', [TransactionController::class, 'makePayment']);
+    });
+
+    Route::get('accounts/{id}', [AccountController::class, 'show']);
 });
+
