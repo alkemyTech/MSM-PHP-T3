@@ -150,5 +150,54 @@ class TransactionController extends Controller
 
         return response()->ok(['message' => 'Depósito realizado con éxito', 'transaction' => $depositTransaction, 'account' => $account]);
     }
-}
+    public function makePayment(Request $request)
+    {
+        // Validar los datos de la solicitud
+        $validator = validator($request->all(), [
+            'account_id' => 'required',
+            'amount' => 'required|numeric|min:0.01', // El monto debe ser mayor o igual a $0.1
+        ]);
+        
 
+        // Comprobar si la validación falla y devolver una respuesta de error
+        if ($validator->fails()) {
+            return response()->badRequest(['message' => 'Datos de pago no válidos']);
+        }
+
+        // Obtener la cuenta a través del account_id
+        $account = Account::where('id', $request->input('account_id'))
+            ->where('deleted', false) // Evaluar si tiene un borrado lógico
+            ->first();
+
+        // Respuesta en caso de error
+        if (!$account) {
+            return response()->notFound(['message' => 'Cuenta no encontrada']);
+        }
+
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Verificar que la cuenta pertenezca al usuario autenticado
+        if ($account->user_id !== $user->id) {
+            return response()->forbidden(['message' => 'No tienes permiso para realizar un pago desde esta cuenta']);
+        }
+
+        // Verificar que la cuenta tenga saldo suficiente para el pago
+        if ($account->balance < $request->input('amount')) {
+            return response()->badRequest(['message' => 'Saldo insuficiente para realizar el pago']);
+        }
+
+        // Crear transacción PAYMENT para la cuenta
+        $paymentTransaction = Transaction::create([
+            'amount' => $request->input('amount'),
+            'type' => 'PAYMENT',
+            'account_id' => $account->id,
+            'transaction_date' => now(),
+        ]);
+
+        // Actualizar el balance de la cuenta
+        $account->decrement('balance', $request->input('amount'));
+
+        return response()->ok(['message' => 'Pago realizado con éxito', 'transaction' => $paymentTransaction, 'account' => $account]);
+    }
+}

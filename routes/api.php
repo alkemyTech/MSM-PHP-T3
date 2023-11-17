@@ -23,11 +23,13 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('register', [AuthController::class, 'register'])->name('auth.registro')->withoutMiddleware(['auth:api']);
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
     });
+    
 
     Route::delete('users/{id}', [UserController::class, 'destroy']);
 
     Route::prefix('transactions')->group(function () {
         Route::post('send', [TransactionController::class, 'sendMoney']);
         Route::post('deposit', [TransactionController::class, 'depositMoney']);
+        Route::post('payment', [TransactionController::class, 'makePayment']);
     });
 });
