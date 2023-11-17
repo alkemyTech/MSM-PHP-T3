@@ -24,3 +24,5 @@ Route::middleware(['api', 'auth:api'])->group(function () {
 
     Route::delete('users/{id}', [UserController::class, 'destroy']);
 });
+
+Route::get('users', [UserController::class,'index']);
