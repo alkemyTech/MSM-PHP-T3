@@ -106,4 +106,49 @@ class TransactionController extends Controller
             return response()->badRequest(['message' => $errorMessage]);
         }
     }
+    public function depositMoney(Request $request)
+    {
+        // Validar los datos de la solicitud
+        $validator = validator($request->all(), [
+            'account_id' => 'required',
+            'amount' => 'required|numeric|min:0.01', // El monto debe ser mayor o igual a $0.1
+        ]);
+
+        // Comprobar si la validación falla y devolver una respuesta de error
+        if ($validator->fails()) {
+            return response()->badRequest(['message' => 'Datos de depósito no válidos']);
+        }
+
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Obtener la cuenta a través del account_id
+        $account = Account::where('id', $request->input('account_id'))
+        ->where('deleted', false) // Evaluar si tiene un borrado lógico
+        ->first();
+
+        // Respuesta en caso de error
+        if (!$account) {
+            return response()->notFound(['message' => 'Cuenta no encontrada']);
+        }
+
+        // Verificar que la cuenta pertenezca al usuario autenticado
+        if ($account->user_id !== $user->id) {
+            return response()->forbidden(['message' => 'No tienes permiso para realizar un depósito en esta cuenta']);
+        }
+
+        // Crear transacción DEPOSIT para la cuenta
+        $depositTransaction = Transaction::create([
+            'amount' => $request->input('amount'),
+            'type' => 'DEPOSIT',
+            'account_id' => $account->id,
+            'transaction_date' => now(),
+        ]);
+
+        // Actualizar el balance de la cuenta
+        $account->increment('balance', $request->input('amount'));
+
+        return response()->ok(['message' => 'Depósito realizado con éxito', 'transaction' => $depositTransaction, 'account' => $account]);
+    }
 }
+
