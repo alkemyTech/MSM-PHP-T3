@@ -22,6 +22,7 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('register', [AuthController::class, 'register'])->name('auth.registro')->withoutMiddleware(['auth:api']);
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
     });
+    
 
     Route::get('users', [UserController::class,'index']);
     Route::delete('users/{id}', [UserController::class, 'destroy']);
@@ -29,6 +30,7 @@ Route::middleware(['api', 'auth:api'])->group(function () {
     Route::prefix('transactions')->group(function () {
         Route::post('send', [TransactionController::class, 'sendMoney']);
         Route::post('deposit', [TransactionController::class, 'depositMoney']);
+        Route::post('payment', [TransactionController::class, 'makePayment']);
     });
 });
 
