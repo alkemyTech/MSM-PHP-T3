@@ -66,23 +66,22 @@ class AuthController extends Controller
         return response()->created(['user' => $user]);
     }
 
-    public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+    public function login(Request $request) {
+    $credentials = $request->only('email', 'password');
 
-        if (! $token = Auth::attempt($credentials)) {
-            return response()->json(['error' => 'Usuario no autorizado'], 401);
-        }
+    if (! $token = Auth::attempt($credentials)) {
+        return response()->json(['error' => 'Usuario no autorizado'], 401);
+    }
 
-        $user = Auth::user();
-        
-        $token = JWTAuth::factory()->setTTL(2)->make(compact('user'));
+    $user = Auth::user();
 
-        return response()->json([
-            'token' => $token,
-            'user' => $user,
-            'message' => 'Inicio de sesion exitoso'
-        ]);
+    $token = JWTAuth::claims(['exp' => now()->addMinutes(2)->timestamp])->fromUser($user);
+
+    return response()->json([
+        'token' => $token,
+        'user' => $user,
+        'message' => 'Inicio de sesión exitoso'
+    ]);
     }
    
 }
