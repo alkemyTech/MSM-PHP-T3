@@ -32,6 +32,8 @@ Route::middleware(['api', 'auth:api'])->group(function () {
     Route::get('users', [UserController::class, 'index']);
     Route::delete('users/{id}', [UserController::class, 'destroy']);
 
+    Route::post('fixed_terms', [FixedTermController::class, 'store']);
+
     Route::prefix('transactions')->group(function () {
         Route::post('send', [TransactionController::class, 'sendMoney']);
         Route::post('deposit', [TransactionController::class, 'depositMoney']);
