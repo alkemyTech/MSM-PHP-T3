@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FixedTermController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,11 +19,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware(['api', 'auth:api'])->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::post('register', [AuthController::class, 'register'])->name('auth.registro')->withoutMiddleware(['auth:api']);
+        Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
+    });
 
-Route::prefix('auth')->group(function () {
-    Route::post('register', [AuthController::class, 'register'])->name('auth.registro');
-    Route::post('login', [AuthController::class, 'login']);
+    Route::get('accounts/balance', [AccountController::class, 'showBalance']);
+    Route::get('accounts/{id}', [AccountController::class, 'show']);
+    Route::post('/accounts', [AccountController::class,'store']);
+
+    Route::get('users', [UserController::class, 'index']);
+    Route::delete('users/{id}', [UserController::class, 'destroy']);
+
+    Route::prefix('transactions')->group(function () {
+        Route::post('send', [TransactionController::class, 'sendMoney']);
+        Route::post('deposit', [TransactionController::class, 'depositMoney']);
+        Route::post('payment', [TransactionController::class, 'makePayment']);
+    });
 });

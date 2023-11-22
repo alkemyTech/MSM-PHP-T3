@@ -14,4 +14,9 @@ class Transaction extends Model
     protected $fillable = ['amount', 'type', 'description', 'account_id', 'transaction_date'];
 
     protected $hidden = ['created_at', 'updated_at'];
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class);
+    }
 }
