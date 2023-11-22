@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FixedTermController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -34,5 +35,5 @@ Route::middleware(['api', 'auth:api'])->group(function () {
     });
 
     Route::get('accounts/{id}', [AccountController::class, 'show']);
+    Route::post('/accounts', [AccountController::class,'store']);
 });
-
