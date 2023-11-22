@@ -28,15 +28,26 @@ class AuthController extends Controller
             return response()->validationError($errors);
         }
 
-        $cbuArs = Str::random(22);
-        $cbuUsd = Str::random(22);
+        function bigNumber() {
+            # prevent the first number from being 0
+            $output = rand(1,9);
+        
+            for($i=0; $i<21; $i++) {
+                $output .= rand(0,9);
+            }
+        
+            return $output;
+        }
+
+        $cbuArs = bigNumber();
+        $cbuUsd = bigNumber();
 
         while (Account::where('cbu', $cbuArs)->exists()) {
-            $cbuArs = Str::random(22);
+            $cbuArs = bigNumber();
         }
 
         while (Account::where('cbu', $cbuUsd)->exists()) {
-            $cbuUsd = Str::random(22);
+            $cbuUsd = bigNumber();
         }
 
         $userRole = Role::where('name', 'USER')->first();
@@ -54,7 +65,7 @@ class AuthController extends Controller
 
         $pesosAccount = Account::create([
             'user_id' => $user->id,
-            'cbu' => $cbuArs,
+            'cbu' => (string) $cbuArs,
             'currency' => 'ARS',
             'balance' => 0,
             'transaction_limit' => 300000,
@@ -62,7 +73,7 @@ class AuthController extends Controller
 
         $usdAccount = Account::create([
             'user_id' => $user->id,
-            'cbu' => $cbuUsd,
+            'cbu' => (string) $cbuUsd,
             'currency' => 'USD',
             'balance' => 0,
             'transaction_limit' => 1000,
