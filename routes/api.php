@@ -25,7 +25,11 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
     });
 
-    Route::get('users', [UserController::class,'index']);
+    Route::get('accounts/balance', [AccountController::class, 'showBalance']);
+    Route::get('accounts/{id}', [AccountController::class, 'show']);
+    Route::post('/accounts', [AccountController::class,'store']);
+
+    Route::get('users', [UserController::class, 'index']);
     Route::delete('users/{id}', [UserController::class, 'destroy']);
 
     Route::prefix('transactions')->group(function () {
@@ -33,7 +37,4 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('deposit', [TransactionController::class, 'depositMoney']);
         Route::post('payment', [TransactionController::class, 'makePayment']);
     });
-
-    Route::get('accounts/{id}', [AccountController::class, 'show']);
-    Route::post('/accounts', [AccountController::class,'store']);
 });
