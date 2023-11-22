@@ -26,7 +26,6 @@ class UserController extends Controller
             return response()->unauthorized();
         }
     }
-}
 
     public function index(){
         $adminId = Role::where("name","ADMIN")->first()->id;
@@ -38,4 +37,3 @@ class UserController extends Controller
         }
     }
 }
-

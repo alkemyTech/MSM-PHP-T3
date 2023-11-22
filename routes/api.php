@@ -31,6 +31,7 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('send', [TransactionController::class, 'sendMoney']);
         Route::post('deposit', [TransactionController::class, 'depositMoney']);
         Route::post('payment', [TransactionController::class, 'makePayment']);
+        Route::get('/', [TransactionController::class, 'listTransactions']);
     });
 
     Route::get('accounts/{id}', [AccountController::class, 'show']);
