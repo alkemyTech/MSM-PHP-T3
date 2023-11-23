@@ -224,5 +224,28 @@ class TransactionController extends Controller
         $transaction->update(['description' => $request->input('description')]);
          
         return response()->ok();
+
+    public function listTransactions()
+    {
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Obtener las cuentas del usuario autenticado
+        $accounts = $user->account;
+
+        // Verificar si el usuario tiene cuentas asociadas
+        if ($accounts->isEmpty()) {
+            return response()->ok(['message' => 'El usuario no tiene cuentas asociadas']);
+        }
+
+        // Obtener las transacciones del usuario 
+        $transactions = Transaction::whereIn('account_id', $accounts->pluck('id'))->get();
+
+        // Verificar si hay transacciones
+        if ($transactions->isEmpty()) {
+            return response()->ok(['message' => 'El usuario no tiene transacciones asociadas']);
+        }
+
+        return response()->ok(['transactions' => $transactions]);
     }
 }
