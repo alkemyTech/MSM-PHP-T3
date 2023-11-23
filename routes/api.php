@@ -26,6 +26,7 @@ Route::middleware(['api', 'auth:api'])->group(function () {
     });
 
     // Rutas para accounts
+
     Route::prefix('accounts')->group(function () {
         Route::get('balance', [AccountController::class, 'showBalance']);
         Route::get('{id}', [AccountController::class, 'show']);
@@ -39,6 +40,7 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::delete('{id}', [UserController::class, 'destroy']);
     });
 
+
     Route::post('fixed_terms', [FixedTermController::class, 'store']);
 
     // Rutas para transactions
@@ -46,7 +48,9 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('send', [TransactionController::class, 'sendMoney']);
         Route::post('deposit', [TransactionController::class, 'depositMoney']);
         Route::post('payment', [TransactionController::class, 'makePayment']);
+        Route::patch('{id}', [TransactionController::class, 'edit']);
         Route::get('/', [TransactionController::class, 'listTransactions']);
         Route::get('/{id}', [TransactionController::class, 'showTransaction']);
+
     });
 });
