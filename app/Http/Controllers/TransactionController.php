@@ -200,6 +200,7 @@ class TransactionController extends Controller
 
         return response()->ok(['message' => 'Pago realizado con éxito', 'transaction' => $paymentTransaction, 'account' => $account]);
     }
+
     public function listTransactions()
     {
         // Obtener el usuario autenticado
@@ -223,6 +224,7 @@ class TransactionController extends Controller
 
         return response()->ok(['transactions' => $transactions]);
     }
+
     public function showTransaction($id)
     {
         // Obtener el usuario autenticado
@@ -240,4 +242,5 @@ class TransactionController extends Controller
             return response()->notFound(['message' => 'Transacción no autorizada para el usuario actual']);
         }
     }
+
 }
