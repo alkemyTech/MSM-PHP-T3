@@ -25,20 +25,25 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
     });
 
+    // Rutas para accounts
     Route::get('accounts/balance', [AccountController::class, 'showBalance']);
     Route::get('accounts/{id}', [AccountController::class, 'show']);
     Route::post('/accounts', [AccountController::class,'store']);
 
+    // Rutas para users
     Route::get('users', [UserController::class, 'index']);
     Route::delete('users/{id}', [UserController::class, 'destroy']);
 
     Route::post('fixed_terms', [FixedTermController::class, 'store']);
 
+    // Rutas para transactions
     Route::prefix('transactions')->group(function () {
         Route::post('send', [TransactionController::class, 'sendMoney']);
         Route::post('deposit', [TransactionController::class, 'depositMoney']);
         Route::post('payment', [TransactionController::class, 'makePayment']);
         Route::patch('{id}', [TransactionController::class, 'edit']);
         Route::get('/', [TransactionController::class, 'listTransactions']);
+        Route::get('/{id}', [TransactionController::class, 'showTransaction']);
+
     });
 });
