@@ -124,8 +124,8 @@ class TransactionController extends Controller
 
         // Obtener la cuenta a través del account_id
         $account = Account::where('id', $request->input('account_id'))
-        ->where('deleted', false) // Evaluar si tiene un borrado lógico
-        ->first();
+            ->where('deleted', false) // Evaluar si tiene un borrado lógico
+            ->first();
 
         // Respuesta en caso de error
         if (!$account) {
@@ -157,7 +157,7 @@ class TransactionController extends Controller
             'account_id' => 'required',
             'amount' => 'required|numeric|min:0.01', // El monto debe ser mayor o igual a $0.1
         ]);
-        
+
 
         // Comprobar si la validación falla y devolver una respuesta de error
         if ($validator->fails()) {
@@ -199,5 +199,29 @@ class TransactionController extends Controller
         $account->decrement('balance', $request->input('amount'));
 
         return response()->ok(['message' => 'Pago realizado con éxito', 'transaction' => $paymentTransaction, 'account' => $account]);
+    }
+
+    public function listTransactions()
+    {
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Obtener las cuentas del usuario autenticado
+        $accounts = $user->account;
+
+        // Verificar si el usuario tiene cuentas asociadas
+        if ($accounts->isEmpty()) {
+            return response()->ok(['message' => 'El usuario no tiene cuentas asociadas']);
+        }
+
+        // Obtener las transacciones del usuario 
+        $transactions = Transaction::whereIn('account_id', $accounts->pluck('id'))->get();
+
+        // Verificar si hay transacciones
+        if ($transactions->isEmpty()) {
+            return response()->ok(['message' => 'El usuario no tiene transacciones asociadas']);
+        }
+
+        return response()->ok(['transactions' => $transactions]);
     }
 }

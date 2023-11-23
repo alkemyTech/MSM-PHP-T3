@@ -18,6 +18,10 @@ class Account extends Model
         'deleted',
     ];
 
+    protected $hidden = ['created_at', 'updated_at'];
+
+    protected $with = ['user'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
