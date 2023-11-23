@@ -26,13 +26,18 @@ Route::middleware(['api', 'auth:api'])->group(function () {
     });
 
     // Rutas para accounts
-    Route::get('accounts/balance', [AccountController::class, 'showBalance']);
-    Route::get('accounts/{id}', [AccountController::class, 'show']);
-    Route::post('/accounts', [AccountController::class,'store']);
+    Route::prefix('accounts')->group(function () {
+        Route::get('balance', [AccountController::class, 'showBalance']);
+        Route::get('{id}', [AccountController::class, 'show']);
+        Route::post('/', [AccountController::class, 'store']);
+        Route::patch('{id}', [AccountController::class, 'editTransactionLimit']);
+    });
 
     // Rutas para users
-    Route::get('users', [UserController::class, 'index']);
-    Route::delete('users/{id}', [UserController::class, 'destroy']);
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::delete('{id}', [UserController::class, 'destroy']);
+    });
 
     Route::post('fixed_terms', [FixedTermController::class, 'store']);
 
@@ -43,6 +48,5 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('payment', [TransactionController::class, 'makePayment']);
         Route::get('/', [TransactionController::class, 'listTransactions']);
         Route::get('/{id}', [TransactionController::class, 'showTransaction']);
-        
     });
 });

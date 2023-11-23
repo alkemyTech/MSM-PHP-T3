@@ -97,4 +97,39 @@ class AccountController extends Controller
 
         return response()->ok($balanceDTO);
     }
+
+    public function editTransactionLimit(Request $request, $id)
+    {
+        // Validar los datos de la solicitud
+        $validator = validator($request->all(), [
+            'transaction_limit' => 'required|numeric|min:0.01', // El límite de transferencia debe ser mayor o igual a $0.1
+        ]);
+
+        // Comprobar si la validación falla y devolver una respuesta de error
+        if ($validator->fails()) {
+            return response()->badRequest(['message' => 'Datos de edición de límite de transferencia no válidos']);
+        }
+
+        // Obtener el usuario autenticado
+        $user = auth()->user();
+
+        // Obtener la cuenta a través del ID de la solicitud
+        $account = Account::find($id);
+
+        // Respuesta en caso de error
+        if (!$account) {
+            return response()->notFound(['message' => 'Cuenta no encontrada']);
+        }
+
+        // Verificar que la cuenta pertenezca al usuario autenticado
+        if ($account->user_id !== $user->id) {
+            return response()->forbidden(['message' => 'No tienes permiso para editar esta cuenta']);
+        }
+
+        // Actualizar el limite de transferencia de la cuenta
+        $account->update(['transaction_limit' => $request->input('transaction_limit')]);
+
+        // Devolver el registro actualizado
+        return response()->ok(['message' => 'Límite de transferencia actualizado', 'account' => $account]);
+    }
 }
