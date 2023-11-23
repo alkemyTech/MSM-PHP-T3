@@ -38,6 +38,7 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::post('send', [TransactionController::class, 'sendMoney']);
         Route::post('deposit', [TransactionController::class, 'depositMoney']);
         Route::post('payment', [TransactionController::class, 'makePayment']);
+        Route::patch('{id}', [TransactionController::class, 'edit']);
         Route::get('/', [TransactionController::class, 'listTransactions']);
     });
 });
