@@ -46,4 +46,6 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::get('/{id}', [TransactionController::class, 'showTransaction']);
 
     });
+
+    Route::post('/fixed_terms/simulate', [FixedTermController::class, 'simulateFixedTerm']);
 });
