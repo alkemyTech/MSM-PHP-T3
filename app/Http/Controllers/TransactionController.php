@@ -202,6 +202,7 @@ class TransactionController extends Controller
         return response()->ok(['message' => 'Pago realizado con éxito', 'transaction' => $paymentTransaction, 'account' => $account]);
     }
 
+
     public function edit(Request $request, $id)
     {
        $currentUser = auth()->user();
@@ -224,6 +225,7 @@ class TransactionController extends Controller
         $transaction->update(['description' => $request->input('description')]);
          
         return response()->ok();
+    }
 
     public function listTransactions()
     {
@@ -248,6 +250,9 @@ class TransactionController extends Controller
 
         return response()->ok(['transactions' => $transactions]);
     }
+
+
+
 
     public function showTransaction($id)
     {
