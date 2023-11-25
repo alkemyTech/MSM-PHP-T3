@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Contracts\Providers\JWT;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -78,19 +80,30 @@ class AuthController extends Controller
             'balance' => 0,
             'transaction_limit' => 1000,
         ]);
+        //Generar token para el usuario registrado
+        $token = JWTAuth::fromUser($user);
 
-        return response()->created(['user' => $user]);
+        return response()->created([
+            'user'  => $user,
+            'token' => $token
+        ], 201);
     }
 
     public function login(Request $request) {
     $credentials = $request->only('email', 'password');
 
-    if (! $token = Auth::attempt($credentials)) {
-        return response()->json(['error' => 'Usuario no autorizado'], 401);
+    try {
+        if (! $token = JWTAuth::attempt($credentials)) {
+            return response()->json(['error' => 'Credenciales invalidas'], 400);
+        }
+    } catch (JWTException $e) {
+        return response()->json([
+            'error' => 'Token no creado'
+        ], 500);
     }
-
-    $user = Auth::user();
-
+    //Obtener usuario actual
+    $user = JWTAuth::user();
+    //Genera un token a partir de un usuario y modifica el exp
     $token = JWTAuth::claims(['exp' => now()->addMinutes(2)->timestamp])->fromUser($user);
 
     return response()->json([
@@ -98,6 +111,5 @@ class AuthController extends Controller
         'user' => $user,
         'message' => 'Inicio de sesión exitoso'
     ]);
-
     }
 }
