@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class TransactionController extends Controller
 {
@@ -201,6 +202,31 @@ class TransactionController extends Controller
         return response()->ok(['message' => 'Pago realizado con éxito', 'transaction' => $paymentTransaction, 'account' => $account]);
     }
 
+
+    public function edit(Request $request, $id)
+    {
+       $currentUser = auth()->user();
+        $transaction = Transaction::where('id', $id)->first();
+        $account = Account::where('id', $transaction->account_id)->first();
+
+        if ($account->user_id != $currentUser->id) {
+            return response()->unauthorized();
+        }
+
+        try {
+            $validator = $request->validate([
+                'description' => 'required|string'
+            ]);
+        } catch (ValidationException $e) {
+            $errors = $e->validator->errors();
+            return response()->validationError($errors);
+        }
+
+        $transaction->update(['description' => $request->input('description')]);
+         
+        return response()->ok();
+    }
+
     public function listTransactions()
     {
         // Obtener el usuario autenticado
@@ -224,4 +250,26 @@ class TransactionController extends Controller
 
         return response()->ok(['transactions' => $transactions]);
     }
+
+
+
+
+    public function showTransaction($id)
+    {
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Obtener la transacción a través del id
+        $transaction = Transaction::find($id);
+
+        // Verificar si la transacción existe y pertenece al usuario autenticado
+        if (!$transaction) {
+            return response()->notFound(['message' => 'Transacción no encontrada']);
+        } elseif ($transaction->account->user_id === $user->id) {
+            return response()->ok(['transaction' => $transaction]);
+        } else {
+            return response()->notFound(['message' => 'Transacción no autorizada para el usuario actual']);
+        }
+    }
+
 }
