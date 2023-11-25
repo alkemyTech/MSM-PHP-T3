@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Account;
+use App\Models\Role;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -271,5 +272,24 @@ class TransactionController extends Controller
             return response()->notFound(['message' => 'Transacción no autorizada para el usuario actual']);
         }
     }
+    
+    public function paginateTransaction()
+{
+    $adminId = Role::where("name", "ADMIN")->first()->id;
+    if (auth()->check() && auth()->user()->role_id == $adminId) {
+        $page = request()->query("page");
+        if (!is_numeric($page) || $page < 1) {
+            return response()->json(['error' => 'El parámetro "page" debe ser un número entero mayor o igual a 1'], 400);
+        }
+
+        $transactions = Transaction::paginate(10, ['*', 'user_id', 'created_at']);
+        $transactions->appends(['page' => $page]);
+
+        return response()->json($transactions);
+    } else {
+        return response()->json(['error' => 'No tienes acceso a este endpoint'], 403);
+    }
+}
+
 
 }

@@ -51,6 +51,7 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::patch('{id}', [TransactionController::class, 'edit']);
         Route::get('/', [TransactionController::class, 'listTransactions']);
         Route::get('/{id}', [TransactionController::class, 'showTransaction']);
+        Route::get('/paginate', [TransactionController::class, 'paginateTransaction']);
 
     });
 });
