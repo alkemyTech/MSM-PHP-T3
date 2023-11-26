@@ -27,12 +27,13 @@ class UserController extends Controller
         }
     }
 
-    public function index(){
-        $adminId = Role::where("name","ADMIN")->first()->id;
-        if (auth()->check() && auth()->user()->role_id == $adminId){
-            $users = User::all();
-            return response()->json($users);
-        } else{
+    public function index()
+    {
+        $adminId = Role::where("name", "ADMIN")->first()->id;
+        if (auth()->check() && auth()->user()->role_id == $adminId) {
+            $users = User::paginate(10);
+            return response()->ok($users);
+        } else {
             return response()->json(['error' => 'No tienes acceso a este endpoint']);
         }
     }
