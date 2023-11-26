@@ -18,7 +18,7 @@ class Account extends Model
         'deleted',
     ];
 
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['created_at', 'updated_at', 'user_id'];
 
     protected $with = ['user'];
 

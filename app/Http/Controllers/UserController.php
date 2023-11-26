@@ -35,7 +35,7 @@ class UserController extends Controller
             // Obtener el término de búsqueda del parámetro de consulta ?search
             $searchTerm = $request->query('search', '');
 
-            // Construir una consulta de búsqueda si se proporciona un término de búsqueda
+            // Obtener una consulta de búsqueda si se proporciona un término de búsqueda
             $query = User::query();
             if ($searchTerm !== '') {
                 $query->where('name', 'like', '%' . $searchTerm . '%')
@@ -52,12 +52,12 @@ class UserController extends Controller
             // Obtener la URL de la página siguiente
             $nextPageUrl = $users->nextPageUrl();
 
-            // Construir la respuesta JSON condicionalmente
+            // Obtener la respuesta JSON
             $response = [
                 'data' => $users->items(),
             ];
 
-            // Agregar las URLs solo si no son nulas
+            // Agregar las URLs si no son nulas
             if ($prevPageUrl !== null) {
                 $response['prev_page_url'] = $prevPageUrl;
             }

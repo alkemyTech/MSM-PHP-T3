@@ -20,13 +20,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['api', 'auth:api'])->group(function () {
+    // Rutas para auth
     Route::prefix('auth')->group(function () {
         Route::post('register', [AuthController::class, 'register'])->name('auth.registro')->withoutMiddleware(['auth:api']);
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
     });
 
     // Rutas para accounts
-
     Route::prefix('accounts')->group(function () {
         Route::get('balance', [AccountController::class, 'showBalance']);
         Route::get('{id}', [AccountController::class, 'show']);
@@ -40,8 +40,10 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::delete('{id}', [UserController::class, 'destroy']);
     });
 
-
-    Route::post('fixed_terms', [FixedTermController::class, 'store']);
+    // Rutas para fixed_terms
+    Route::prefix('fixed_terms')->group(function () {
+        Route::post('/', [FixedTermController::class, 'store']);
+    });
 
     // Rutas para transactions
     Route::prefix('transactions')->group(function () {
@@ -51,6 +53,5 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::patch('{id}', [TransactionController::class, 'edit']);
         Route::get('/', [TransactionController::class, 'listTransactions']);
         Route::get('/{id}', [TransactionController::class, 'showTransaction']);
-
     });
 });
