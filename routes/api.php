@@ -21,8 +21,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'auth:api'])->group(function () {
     Route::prefix('auth')->group(function () {
-        Route::post('register', [AuthController::class, 'register'])->name('auth.registro')->withoutMiddleware(['auth:api']);
+        Route::post('register', [AuthController::class, 'register'])->withoutMiddleware(['auth:api']);
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
+        Route::get('me', [AuthController::class, 'details'])->withoutMiddleware(['auth:api']);
     });
 
     // Rutas para accounts
