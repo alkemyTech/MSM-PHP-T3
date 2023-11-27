@@ -30,12 +30,48 @@ class UserController extends Controller
         }
     }
 
-    public function index(){
-        $adminId = Role::where("name","ADMIN")->first()->id;
-        if (auth()->check() && auth()->user()->role_id == $adminId){
-            $users = User::all();
-            return response()->json($users);
-        } else{
+    public function index(Request $request)
+    {
+        $adminId = Role::where("name", "ADMIN")->first()->id;
+        if (auth()->check() && auth()->user()->role_id == $adminId) {
+
+            // Obtener el término de búsqueda del parámetro de consulta ?search
+            $searchTerm = $request->query('search', '');
+
+            // Obtener una consulta de búsqueda si se proporciona un término de búsqueda
+            $query = User::query();
+            if ($searchTerm !== '') {
+                $query->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('last_name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('email', 'like', '%' . $searchTerm . '%');
+            }
+
+            // Paginar los usuarios 
+            $users = $query->paginate(10);
+
+            // Obtener la URL de la página anterior
+            $prevPageUrl = $users->previousPageUrl();
+
+            // Obtener la URL de la página siguiente
+            $nextPageUrl = $users->nextPageUrl();
+
+            // Obtener la respuesta JSON
+            $response = [
+                'data' => $users->items(),
+            ];
+
+            // Agregar las URLs si no son nulas
+            if ($prevPageUrl !== null) {
+                $response['prev_page_url'] = $prevPageUrl;
+            }
+
+            if ($nextPageUrl !== null) {
+                $response['next_page_url'] = $nextPageUrl;
+            }
+
+            return response()->json($response);
+            
+        } else {
             return response()->json(['error' => 'No tienes acceso a este endpoint']);
         }
     }
@@ -81,3 +117,4 @@ class UserController extends Controller
         }
     }    
     }
+

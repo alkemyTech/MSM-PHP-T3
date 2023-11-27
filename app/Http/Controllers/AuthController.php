@@ -30,14 +30,15 @@ class AuthController extends Controller
             return response()->validationError($errors);
         }
 
-        function bigNumber() {
+        function bigNumber()
+        {
             # prevent the first number from being 0
-            $output = rand(1,9);
-        
-            for($i=0; $i<21; $i++) {
-                $output .= rand(0,9);
+            $output = rand(1, 9);
+
+            for ($i = 0; $i < 21; $i++) {
+                $output .= rand(0, 9);
             }
-        
+
             return $output;
         }
 
@@ -89,9 +90,9 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request) {
-    $credentials = $request->only('email', 'password');
-
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
     try {
         if (! $token = JWTAuth::attempt($credentials)) {
             return response()->json(['error' => 'Credenciales invalidas'], 400);
@@ -111,5 +112,13 @@ class AuthController extends Controller
         'user' => $user,
         'message' => 'Inicio de sesión exitoso'
     ]);
+    }
+
+    public function details(Request $request)
+    {
+        $currentUser = auth()->user();
+        $accounts = Account::where('user_id', $currentUser->id)->get();
+
+        return response()->ok(['user' => $currentUser, 'accounts' => $accounts]);
     }
 }

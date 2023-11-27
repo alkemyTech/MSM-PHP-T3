@@ -13,7 +13,7 @@ class Transaction extends Model
 
     protected $fillable = ['amount', 'type', 'description', 'account_id', 'transaction_date'];
 
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['created_at', 'updated_at', 'account_id'];
 
     protected $with = ['account'];
 
