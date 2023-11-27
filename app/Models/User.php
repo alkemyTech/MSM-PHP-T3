@@ -36,7 +36,8 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'remember_token',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'role_id'
     ];
 
     protected $with = ['role'];
