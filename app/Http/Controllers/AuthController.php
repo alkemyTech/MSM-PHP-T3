@@ -28,14 +28,15 @@ class AuthController extends Controller
             return response()->validationError($errors);
         }
 
-        function bigNumber() {
+        function bigNumber()
+        {
             # prevent the first number from being 0
-            $output = rand(1,9);
-        
-            for($i=0; $i<21; $i++) {
-                $output .= rand(0,9);
+            $output = rand(1, 9);
+
+            for ($i = 0; $i < 21; $i++) {
+                $output .= rand(0, 9);
             }
-        
+
             return $output;
         }
 
@@ -82,22 +83,30 @@ class AuthController extends Controller
         return response()->created(['user' => $user]);
     }
 
-    public function login(Request $request) {
-    $credentials = $request->only('email', 'password');
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
 
-    if (! $token = Auth::attempt($credentials)) {
-        return response()->json(['error' => 'Usuario no autorizado'], 401);
-    }
+        if (!$token = Auth::attempt($credentials)) {
+            return response()->json(['error' => 'Usuario no autorizado'], 401);
+        }
 
-    $user = Auth::user();
+        $user = Auth::user();
 
     $token = JWTAuth::claims(['exp' => now()->addMinutes(2)->timestamp])->fromUser($user);
 
-    return response()->json([
-        'token' => $token,
-        'user' => $user,
-        'message' => 'Inicio de sesión exitoso'
-    ]);
+        return response()->json([
+            'token' => $token,
+            'user' => $user,
+            'message' => 'Inicio de sesión exitoso'
+        ]);
+    }
 
+    public function details(Request $request)
+    {
+        $currentUser = auth()->user();
+        $accounts = Account::where('user_id', $currentUser->id)->get();
+
+        return response()->ok(['user' => $currentUser, 'accounts' => $accounts]);
     }
 }
