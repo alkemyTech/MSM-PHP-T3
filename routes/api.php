@@ -20,21 +20,31 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['api', 'auth:api'])->group(function () {
+    // Rutas para auth
     Route::prefix('auth')->group(function () {
-        Route::post('register', [AuthController::class, 'register'])->name('auth.registro')->withoutMiddleware(['auth:api']);
+        Route::post('register', [AuthController::class, 'register'])->withoutMiddleware(['auth:api']);
         Route::post('login', [AuthController::class, 'login'])->withoutMiddleware(['auth:api']);
+        Route::get('me', [AuthController::class, 'details'])->withoutMiddleware(['auth:api']);
     });
 
     // Rutas para accounts
-    Route::get('accounts/balance', [AccountController::class, 'showBalance']);
-    Route::get('accounts/{id}', [AccountController::class, 'show']);
-    Route::post('/accounts', [AccountController::class,'store']);
+    Route::prefix('accounts')->group(function () {
+        Route::get('balance', [AccountController::class, 'showBalance']);
+        Route::get('{id}', [AccountController::class, 'show']);
+        Route::post('/', [AccountController::class, 'store']);
+        Route::patch('{id}', [AccountController::class, 'editTransactionLimit']);
+    });
 
     // Rutas para users
-    Route::get('users', [UserController::class, 'index']);
-    Route::delete('users/{id}', [UserController::class, 'destroy']);
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::delete('{id}', [UserController::class, 'destroy']);
+    });
 
-    Route::post('fixed_terms', [FixedTermController::class, 'store']);
+    // Rutas para fixed_terms
+    Route::prefix('fixed_terms')->group(function () {
+        Route::post('/', [FixedTermController::class, 'store']);
+    });
 
     // Rutas para transactions
     Route::prefix('transactions')->group(function () {
@@ -44,8 +54,8 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::patch('{id}', [TransactionController::class, 'edit']);
         Route::get('/', [TransactionController::class, 'listTransactions']);
         Route::get('/{id}', [TransactionController::class, 'showTransaction']);
-
     });
 
     Route::post('/fixed_terms/simulate', [FixedTermController::class, 'simulateFixedTerm']);
 });
+
