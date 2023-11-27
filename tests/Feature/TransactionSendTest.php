@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use App\Models\User;
 use App\Models\Account;
 use Tests\TestCase;
@@ -10,7 +10,7 @@ use Tests\TestCase;
 class TransactionSendTest extends TestCase
 {
 
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_send_money_successfully()
     {
