@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Models\Account;
 use Tests\TestCase;
 
-class TransactionControllerTest extends TestCase
+class TransactionSendTest extends TestCase
 {
 
     use RefreshDatabase;
