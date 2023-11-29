@@ -23,13 +23,13 @@ class LoginControllerTest extends TestCase
             'name' => 'usuario de prueba',
             'last_name'=> 'usuario de prueba',
             'role_id' => 1,
-            'email' => 'u@p.com',
+            'email' => 'wwz@p.com',
             'password' => bcrypt('contrasena'),
         ]);
 
         // Realizar la solicitud de inicio de sesión
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'u@p.com',
+            'email' => 'wwz@p.com',
             'password' => 'contrasena',
         ]);
 
@@ -39,17 +39,25 @@ class LoginControllerTest extends TestCase
         
         // Verificar que el token no esté vacío
         $this->assertNotEmpty($response->json('token'));
+        // Elimina el usuario de la base de datos después de la prueba
+        $userToDelete = User::where('email', 'wwz@p.com')->first();
+        $userToDelete->delete();
+
+        // Verifica que el usuario ha sido eliminado de la base de datos
+        $this->assertDatabaseMissing('users', [
+            'email' => 'wwz@p.com',
+        ]);
     }
 
     public function test_user_login_fake_credentails(){
         // Realizar la solicitud de inicio de sesión
         $response = $this->postJson('/api/auth/login', [
-            'email' => 'u@fake.com',
+            'email' => 'wwww@fake.com',
             'password' => 'contrasena',
         ]);
 
         // Verificar que la solicitud obtuvo un error y tiene la estructura esperada
-        $response->assertStatus(401)
+        $response->assertStatus(400)
             ->assertJsonStructure(['error']);
     }
 

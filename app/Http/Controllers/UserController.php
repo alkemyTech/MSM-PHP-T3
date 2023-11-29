@@ -107,7 +107,15 @@ class UserController extends Controller
             // Guardar los cambios en el usuario
             $user->save();
 
-            return response()->json(['message' => 'Datos actualizados con éxito', 'user' => $user]);
+            // Información que verá el usuario
+            $userData = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+            ];
+
+            return response()->json(['message' => 'Datos actualizados con éxito', 'user' => $userData]);
 
         } catch (ValidationException $e) {
             $errors = $e->validator->errors();
