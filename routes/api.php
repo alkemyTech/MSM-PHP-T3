@@ -60,3 +60,4 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::get('/{id}', [TransactionController::class, 'showTransaction']);
     });
 });
+});
