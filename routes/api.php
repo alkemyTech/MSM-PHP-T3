@@ -27,6 +27,7 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::get('me', [AuthController::class, 'details'])->withoutMiddleware(['auth:api']);
     });
 
+    Route::middleware(['jwt.verify'])->group(function () {
     // Rutas para accounts
     Route::prefix('accounts')->group(function () {
         Route::get('balance', [AccountController::class, 'showBalance']);
@@ -40,11 +41,13 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::delete('{id}', [UserController::class, 'destroy']);
     });
+      Route::post('auth/me', [UserController::class, 'update']);
 
     // Rutas para fixed_terms
     Route::prefix('fixed_terms')->group(function () {
         Route::post('/', [FixedTermController::class, 'store']);
     });
+
 
     // Rutas para transactions
     Route::prefix('transactions')->group(function () {
@@ -55,4 +58,5 @@ Route::middleware(['api', 'auth:api'])->group(function () {
         Route::get('/', [TransactionController::class, 'listTransactions']);
         Route::get('/{id}', [TransactionController::class, 'showTransaction']);
     });
+});
 });
