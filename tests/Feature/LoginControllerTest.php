@@ -13,8 +13,6 @@ class LoginControllerTest extends TestCase
 {
 
     use DatabaseTransactions;
-
-    
     
     public function test_user_can_login_and_receive_jwt()
     {
