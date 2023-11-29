@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Account;
+use App\Models\Role;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -248,7 +249,24 @@ class TransactionController extends Controller
             return response()->ok(['message' => 'El usuario no tiene transacciones asociadas']);
         }
 
+            // Verificar si el usuario es administrador
+    $adminRole = Role::where('name', 'ADMIN')->first();
+    if ($adminRole && $user->role_id === $adminRole->id) {
+        // Paginar las transacciones
+        $page = request()->get('page');
+        if (!is_numeric($page) || $page < 1) {
+            return response()->json(['error' => 'The "page" parameter must be an integer greater than or equal to 1'], 400);
+        }
+
+        $transactions = Transaction::whereIn('account_id', $accounts->pluck('id'))->paginate(10);
+        $transactions->appends(['page' => $page]);
+
+        // Devolver la respuesta
         return response()->ok(['transactions' => $transactions]);
+    } else {
+        // Devolver las transacciones del usuario
+        return response()->ok(['transactions' => $transactions]);
+    }
     }
 
 
@@ -271,5 +289,7 @@ class TransactionController extends Controller
             return response()->notFound(['message' => 'Transacción no autorizada para el usuario actual']);
         }
     }
+
+
 
 }
