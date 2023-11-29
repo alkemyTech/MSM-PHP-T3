@@ -13,11 +13,9 @@ use Tests\TestCase;
 class TransactionSendTest extends TestCase
 {
 
-
     use DatabaseTransactions;
 
     
-
     public function test_send_money_successfully()
     {
         // Crear usuario emisor

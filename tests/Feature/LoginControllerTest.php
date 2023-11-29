@@ -14,8 +14,6 @@ class LoginControllerTest extends TestCase
 
     use DatabaseTransactions;
     
-
-    
     public function test_user_can_login_and_receive_jwt()
     {
         // Crear un rol de prueba en la base de datos
