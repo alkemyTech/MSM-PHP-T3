@@ -26,6 +26,19 @@ class AccountController extends Controller
         }
     }
 
+    public function list()
+    {
+        $adminId = Role::where('name', 'ADMIN')->first()->id;
+        $currentUser = auth()->user();
+
+        if ($currentUser->role_id == $adminId) {
+            $accounts = Account::paginate(10);
+            return response()->ok($accounts);
+        } else {
+            return response()->unauthorized();
+        }
+    }
+
     private function generateCbu()
     {
       $cbu = '';
