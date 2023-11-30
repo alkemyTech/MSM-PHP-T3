@@ -46,6 +46,7 @@ Route::middleware(['api', 'auth:api'])->group(function () {
     // Rutas para fixed_terms
     Route::prefix('fixed_terms')->group(function () {
         Route::post('/', [FixedTermController::class, 'store']);
+        Route::post('/simulate', [FixedTermController::class, 'simulateFixedTerm']);
     });
 
 
