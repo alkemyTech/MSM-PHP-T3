@@ -32,6 +32,7 @@ Route::middleware(['api', 'auth:api'])->group(function () {
     Route::prefix('accounts')->group(function () {
         Route::get('balance', [AccountController::class, 'showBalance']);
         Route::get('{id}', [AccountController::class, 'show']);
+        Route::get('/', [AccountController::class, 'list']);
         Route::post('/', [AccountController::class, 'store']);
         Route::patch('{id}', [AccountController::class, 'editTransactionLimit']);
     });
